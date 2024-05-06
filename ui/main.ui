@@ -211,10 +211,10 @@
      <string>Fatura Görüntüle</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_5">
+   <widget class="QPushButton" name="filePathButton">
     <property name="geometry">
      <rect>
-      <x>500</x>
+      <x>680</x>
       <y>280</y>
       <width>89</width>
       <height>25</height>
@@ -224,12 +224,12 @@
      <string>Dosya Bul</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="textBrowser">
+   <widget class="QTextBrowser" name="filePathBrowser">
     <property name="geometry">
      <rect>
       <x>170</x>
       <y>280</y>
-      <width>311</width>
+      <width>501</width>
       <height>31</height>
      </rect>
     </property>
