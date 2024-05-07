@@ -25,31 +25,25 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="usernameLabel">
        <property name="text">
         <string>Kullanıcı Adı</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="passwordLabel">
        <property name="text">
         <string>Parola</string>
        </property>
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="loginButton">
        <property name="text">
         <string>Giriş</string>
        </property>
       </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QTextEdit" name="textEdit"/>
-     </item>
-     <item row="2" column="1">
-      <widget class="QTextEdit" name="textEdit_2"/>
      </item>
      <item row="4" column="1">
       <widget class="QPushButton" name="pushButton_2">
@@ -57,6 +51,12 @@
         <string>Güvenli Çıkış</string>
        </property>
       </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="usernameLineEdit"/>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="passwordLineEdit"/>
      </item>
     </layout>
    </widget>
@@ -125,7 +125,7 @@
      <string>Faturaları Oluştur</string>
     </property>
    </widget>
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QTableWidget" name="mainDataTable">
     <property name="geometry">
      <rect>
       <x>25</x>
