@@ -112,7 +112,7 @@
      <string>Faturalama Tipini Seçiniz</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="createInvoiceButton">
     <property name="geometry">
      <rect>
       <x>730</x>

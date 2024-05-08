@@ -16,6 +16,8 @@ class Main(QMainWindow):
         loadUi(f"{ui_path}main.ui", self)
         self.setupUI()
         self.desktopSelenium = DesktopSelenium()
+        self.data = None
+        self.loginValidation = False
 
     def setupUI(self):
         self.openFileButton = self.findChild(QPushButton, 'filePathButton') 
@@ -23,14 +25,22 @@ class Main(QMainWindow):
         self.openFileButton.clicked.connect(self.openFileDialog)
         self.loginButton.clicked.connect(self.loginFunction)
         self.filePathBrowser.textChanged.connect(self.excelOperations)
+        self.createInvoiceButton.clicked.connect(self.createInvoice)
     
     def loginFunction(self):
         self.username = self.usernameLineEdit.text()
         self.password = self.passwordLineEdit.text()
         if self.username == "test" and self.password == "test":
             urlWithToken = self.desktopSelenium.connectTestAccount()
+            self.loginValidation = True
             print(urlWithToken)
-            self.desktopSelenium.closeConnection()
+            #self.desktopSelenium.closeConnection()
+
+    def createInvoice(self):
+        if isinstance(self.data, pd.DataFrame) and self.loginValidation:
+            self.desktopSelenium.createInvoice()
+        else:
+            print("Veri Ekleyiniz.")
 
     def openFileDialog(self):
         self.filePath, _ = QFileDialog.getOpenFileName(self, "Dosya Seç", "", "Tüm Dosyalar (*);;Metin Dosyaları (*.txt)")
@@ -38,16 +48,16 @@ class Main(QMainWindow):
             self.filePathBrowser.setText(self.filePath)
 
     def excelOperations(self):
-        data = pd.read_excel(self.filePath) 
-        print(data)
-        data_short = data[[""]]
-        self.mainDataTable.setRowCount(len(data))
-        self.mainDataTable.setColumnCount(len(data.columns))
-        self.mainDataTable.setHorizontalHeaderLabels(data.columns)
+        self.data = pd.read_excel(self.filePath) 
+        print(self.data)
+        #data_short = data[[""]]
+        self.mainDataTable.setRowCount(len(self.data))
+        self.mainDataTable.setColumnCount(len(self.data.columns))
+        self.mainDataTable.setHorizontalHeaderLabels(self.data.columns)
 
-        for i in range(len(data)):
-            for j in range(len(data.columns)):
-                self.mainDataTable.setItem(i, j, QTableWidgetItem(str(data.iloc[i, j])))
+        for i in range(len(self.data)):
+            for j in range(len(self.data.columns)):
+                self.mainDataTable.setItem(i, j, QTableWidgetItem(str(self.data.iloc[i, j])))
 
 app = QApplication(sys.argv)
 mainwindow = Main()
