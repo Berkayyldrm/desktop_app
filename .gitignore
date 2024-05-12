@@ -1,3 +1,11 @@
+*.pyc
+*.pyo
+
+# Python byte-compiled / optimized / DLL dosyaları
+__pycache__/
+*.py[cod]
+*$py.class
+
 main.ui
 profit_rate.ui
 stockupdate_stockinsert.ui

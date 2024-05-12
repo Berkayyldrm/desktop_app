@@ -198,7 +198,7 @@
      <string>Faturaların Detayları</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="displayInvoicesButton">
     <property name="geometry">
      <rect>
       <x>460</x>
