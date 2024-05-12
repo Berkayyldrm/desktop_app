@@ -5,7 +5,7 @@ from PyQt6.uic import loadUi
 import sys
 from PyQt6.QtWidgets import QFileDialog, QLabel, QPushButton
 import pandas as pd
-
+from DisplayInvoices import DisplayInvoices
 ui_path = "./ui/"
 #logo_file = "path/to/your/logo.png"  # Logo dosyasının yolu
 
@@ -26,6 +26,7 @@ class Main(QMainWindow):
         self.loginButton.clicked.connect(self.loginFunction)
         self.filePathBrowser.textChanged.connect(self.excelOperations)
         self.createInvoiceButton.clicked.connect(self.createInvoice)
+        self.displayInvoicesButton.clicked.connect(self.displayInvoicesScreen)
     
     def loginFunction(self):
         self.username = self.usernameLineEdit.text()
@@ -58,6 +59,10 @@ class Main(QMainWindow):
         for i in range(len(self.data)):
             for j in range(len(self.data.columns)):
                 self.mainDataTable.setItem(i, j, QTableWidgetItem(str(self.data.iloc[i, j])))
+
+    def displayInvoicesScreen(self):
+        self.second_window = DisplayInvoices()
+        self.second_window.show()
 
 app = QApplication(sys.argv)
 mainwindow = Main()
