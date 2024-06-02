@@ -1,3 +1,4 @@
 conda activate desktop_app
 
 pyqt6-tools designer
+ 
