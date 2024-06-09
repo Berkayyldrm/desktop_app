@@ -10,6 +10,7 @@ class DesktopSelenium():
         self.driver = webdriver.Firefox()
         self.loginUrl = "https://earsivportaltest.efatura.gov.tr/login.jsp"
         self.xpathMap = {
+            'ETTN': '/html/body/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div[2]/div/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/fieldset/table/tr[1]/td[2]/span',
             'VKN/TCKN': '/html/body/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div[2]/div/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[2]/div/div/fieldset/table/tr[1]/td[2]/input',
             'Ünvan': '/html/body/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div[2]/div/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[2]/div/div/fieldset/table/tr[2]/td[2]/input',
             'Adi': '/html/body/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div[2]/div/div/div[2]/div[2]/div/div/div[1]/div/div/div/div[2]/div/div/fieldset/table/tr[3]/td[2]/input',
@@ -47,6 +48,24 @@ class DesktopSelenium():
         element = wait.until(EC.visibility_of_element_located((By.XPATH, xpathValue)))
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
         element.send_keys(sendKeys)
+    
+    def getKeyElements(self, wait, xpathValue):
+        element = wait.until(EC.visibility_of_element_located((By.XPATH, xpathValue)))
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        return element
+
+    def getInvoiceETTNInfo(self):
+        wait = WebDriverWait(self.driver, 10)  # 10 saniye kadar bekleyecek maksimum
+        selectModule = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="gen__1006"]')))
+        selectModule.click()
+        selectModule2 = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="gen__1006"]/option[2]')))
+        selectModule2.click()
+        selectModule3 = wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div[1]/div/div/div/div/div/div/ul/li[2]/a')))
+        selectModule3.click()
+        selectModule4 = wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div[1]/div/div/div/div/div/div/ul/li[2]/ul/li[5]/a')))
+        selectModule4.click()
+        ettn = self.clickElements(wait=wait, xpathValue=self.xpathMap.get("ETTN"))
+        return ettn
 
     def createInvoice(self):
         wait = WebDriverWait(self.driver, 10)  # 10 saniye kadar bekleyecek maksimum
@@ -58,9 +77,10 @@ class DesktopSelenium():
         selectModule3.click()
         selectModule4 = wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div/div/div[1]/div/div/div/div/div/div/ul/li[2]/ul/li[5]/a')))
         selectModule4.click()
-
+        
         self.sendKeyElements(wait=wait, xpathValue=self.xpathMap.get("VKN/TCKN"), sendKeys="11111111111")
         self.sendKeyElements(wait=wait, xpathValue=self.xpathMap.get("Ünvan"), sendKeys="")
+        time.sleep(1)
         self.sendKeyElements(wait=wait, xpathValue=self.xpathMap.get("Adi"), sendKeys="Mehmet")
         self.sendKeyElements(wait=wait, xpathValue=self.xpathMap.get("Soyadi"), sendKeys="Yilmaz")
         self.sendKeyElements(wait=wait, xpathValue=self.xpathMap.get("Ülke"), sendKeys="Türkiye")

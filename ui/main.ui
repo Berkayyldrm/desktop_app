@@ -46,14 +46,18 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="logoutButton">
        <property name="text">
         <string>Güvenli Çıkış</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="usernameLineEdit"/>
+      <widget class="QLineEdit" name="usernameLineEdit">
+       <property name="text">
+        <string>33333303</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="1">
       <widget class="QLineEdit" name="passwordLineEdit"/>
