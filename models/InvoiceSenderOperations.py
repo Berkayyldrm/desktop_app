@@ -2,27 +2,21 @@ import requests
 import json
 from datetime import datetime
 import uuid
-"""
-{
-"malHizmet":"x",
-"miktar":0,
-"birim":"",
-"birimFiyat":"0",
-"fiyat":"0",
-"iskontoOrani":0,
-"iskontoTutari":"0",
-"iskontoNedeni":"",
-"malHizmetTutari":"0",
-"vergiOrani":0,
-"kdvTutari":"0",
-"vergininKdvTutari":"0",
-"ozelMatrahTutari":"0",
-"hesaplananotvtevkifatakatkisi":"0"
-}
-"""
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+PORTAL_TYPE = os.environ.get("PORTAL_TYPE")
+
 class InvoiceSenderOperations:
     def __init__(self):
-        self.url = 'https://earsivportaltest.efatura.gov.tr/earsiv-services/dispatch'
+        self.baseUrl = ""
+        if PORTAL_TYPE == "Test":
+            self.baseUrl = "https://earsivportaltest.efatura.gov.tr"
+        elif PORTAL_TYPE == "Prod":
+            self.baseUrl = "https://earsivportal.efatura.gov.tr"
+        self.url = f'{self.baseUrl}/earsiv-services/dispatch'
         self.headers = {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
@@ -115,8 +109,11 @@ class InvoiceSenderOperations:
         
         with open('dataerr.json', 'w') as f:
             json.dump(data, f)
-        response = requests.post(self.url, data=data, headers=self.headers)
-        return response.text
+        try:
+            response = requests.post(self.url, data=data, headers=self.headers)
+        except requests.RequestException as e:
+            raise ValueError("Error Sending Invoice")
+        return response
     
     def createInvoice(self, data, token):
         updatedInvoice = self.invoice_template.copy()
@@ -149,7 +146,16 @@ class InvoiceSenderOperations:
 
         updatedInvoice["odenecekTutar"] = data.get("FATURALANACAK TUTAR")
 
-        responseText = self.sendInvoiceRequest(invoice_data=updatedInvoice, token=token)
-        return responseText
-
+        response = self.sendInvoiceRequest(invoice_data=updatedInvoice, token=token)
+        if response.status_code == 200:
+            response_json = response.json()
+            if 'data' in response_json:
+                if response_json["data"] == "Faturanız başarıyla oluşturulmuştur. Düzenlenen Belgeler menüsünden faturanıza ulaşabilirsiniz.":
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
 

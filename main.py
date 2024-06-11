@@ -11,7 +11,7 @@ from models.DataValidator import DataValidator
 from models.InvoiceSenderOperations import InvoiceSenderOperations
 from models.LoginOperations import LoginOperations
 from PyQt6.QtWidgets import QMessageBox
-
+from models.CustomMessageBox import FailedMessageBox
 class Main(QMainWindow):
 
     def __init__(self):
@@ -39,14 +39,15 @@ class Main(QMainWindow):
     def loginFunction(self):
         username = self.usernameLineEdit.text()
         password = self.passwordLineEdit.text()
-        token = self.loginOperations.login(username, password)
+        token, response = self.loginOperations.login(username, password)
         if token:
             self.token = token
             self.userId, self.userName = self.loginOperations.getLoginUserInfo(self.token)
             self.loginValidation = True
             QMessageBox.information(None, "Login Succesfully", f"Giriş yapıldı. {self.userId}, {self.userName}", QMessageBox.StandardButton.Ok)
         else:
-            QMessageBox.warning(None, "Login Error", "Kullanıcı adı veya şifre hatalı.", QMessageBox.StandardButton.Ok)
+            print(response.text)
+            QMessageBox.warning(None, "Login Error", "Kullanıcı adı veya şifre hatalı. Veya sistemsel bir hata bulunuyor.", QMessageBox.StandardButton.Ok)
         
     def logoutFunction(self):
         if self.loginValidation == True:
@@ -62,12 +63,24 @@ class Main(QMainWindow):
         
     def createInvoice(self):
         print(self.token)
+        failedInvoices = []
         if isinstance(self.data, pd.DataFrame) and self.loginValidation:
             for index, row in self.data.iterrows():
-                responseText = self.InvoiceSenderOperations.createInvoice(data=row, token=self.token)
-                print(responseText)
+                response = self.InvoiceSenderOperations.createInvoice(data=row, token=self.token)
+                self.progressBar.setValue(int((index + 1) / len(self.data) * 100))
+                if response == True:
+                    pass
+                else:
+                    failedInvoices.append(index)
         else:
             QMessageBox.information(None, "Fatura Oluşturulamadı", "Veri Ekleyiniz Ve/Veya Giriş Yapınız.", QMessageBox.StandardButton.Ok)
+        
+        if not failedInvoices:
+            QMessageBox.information(None, "Fatura Oluşturuldu", "Fatura Oluşturma İşlemi Başarıyla Gerçekleşti.", QMessageBox.StandardButton.Ok)
+            self.progressBar.setValue(0)
+        else:
+            FailedMessageBox(failedInvoices=failedInvoices, data=self.data).exec()
+            self.progressBar.setValue(0)
 
     def openFileDialog(self):
         filePath, _ = QFileDialog.getOpenFileName(self, "Select File", "", 
