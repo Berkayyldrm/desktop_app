@@ -20,7 +20,10 @@ class InvoiceSenderOperations:
         self.headers = {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-        self.invoice_template = {
+        
+        
+    def createTemplates(self):
+        invoice_template = {
                 "faturaUuid":"",
                 "belgeNumarasi":"",
                 "faturaTarihi":"",
@@ -70,8 +73,8 @@ class InvoiceSenderOperations:
                 "zRaporNo":"",
                 "okcSeriNo":""
                 }
-        self.malHizmetTableTemplate = {
-            "malHizmet":"x",
+        malHizmetTableTemplate = {
+            "malHizmet":"",
             "miktar":0,
             "birim":"",
             "birimFiyat":"0",
@@ -86,7 +89,8 @@ class InvoiceSenderOperations:
             "ozelMatrahTutari":"0",
             "hesaplananotvtevkifatakatkisi":"0"
             }
-        
+        return invoice_template, malHizmetTableTemplate
+    
     def createBasicUUID(self):
         random_uuid = uuid.uuid4()
         uuid_str = str(random_uuid).replace('-', '')
@@ -107,8 +111,6 @@ class InvoiceSenderOperations:
             'jp': json.dumps(invoice_data, indent=4)
         }
         
-        with open('dataerr.json', 'w') as f:
-            json.dump(data, f)
         try:
             response = requests.post(self.url, data=data, headers=self.headers)
         except requests.RequestException as e:
@@ -116,8 +118,8 @@ class InvoiceSenderOperations:
         return response
     
     def createInvoice(self, data, token):
-        updatedInvoice = self.invoice_template.copy()
-        updatedMalHizmetTableTemplate = self.malHizmetTableTemplate.copy()
+        invoice_template, malHizmetTableTemplate = self.createTemplates()
+        updatedInvoice = invoice_template
 
         now = datetime.now()
         updatedInvoice["faturaUuid"] = self.createUUID()
@@ -132,21 +134,35 @@ class InvoiceSenderOperations:
         updatedInvoice["vergiDairesi"] = data.get("VERGİ DAİRESİ")
         updatedInvoice["bulvarcaddesokak"] = data.get("FATURA ADRESİ")
 
-        malHizmetTableCount = 1
-        updatedMalHizmetTableTemplate["malHizmet"] = data.get("ÜRÜN ADI")
-        updatedMalHizmetTableTemplate["miktar"] = data.get("MİKTAR")
-        updatedMalHizmetTableTemplate["birimFiyat"] = data.get("BİRİM FİYATI")
-        updatedMalHizmetTableTemplate["iskontoOrani"] = data.get("İSKONTO ORANI")
-        updatedMalHizmetTableTemplate["iskontoTutari"] = data.get("İSKONTO TUTARI")
-        updatedMalHizmetTableTemplate["malHizmetTutari"] = data.get("SATIŞ TUTARI(KDV HARİÇ)")
-        updatedMalHizmetTableTemplate["vergiOrani"] = data.get("KDV ORANI")
-        updatedMalHizmetTableTemplate["kdvTutari"] = data.get("KDV TUTARI")
+        if not isinstance(data.get("ÜRÜN ADI"), list):
+            updatedMalHizmetTableTemplate = malHizmetTableTemplate.copy()
+            updatedMalHizmetTableTemplate["malHizmet"] = data.get("ÜRÜN ADI")
+            updatedMalHizmetTableTemplate["miktar"] = data.get("MİKTAR")
+            updatedMalHizmetTableTemplate["birimFiyat"] = data.get("BİRİM FİYATI")
+            updatedMalHizmetTableTemplate["iskontoOrani"] = data.get("İSKONTO ORANI")
+            updatedMalHizmetTableTemplate["iskontoTutari"] = data.get("İSKONTO TUTARI")
+            updatedMalHizmetTableTemplate["malHizmetTutari"] = data.get("SATIŞ TUTARI(KDV HARİÇ)")
+            updatedMalHizmetTableTemplate["vergiOrani"] = data.get("KDV ORANI")
+            updatedMalHizmetTableTemplate["kdvTutari"] = data.get("KDV TUTARI")
+            updatedInvoice["malHizmetTable"].append(updatedMalHizmetTableTemplate)
 
-        updatedInvoice["malHizmetTable"].append(updatedMalHizmetTableTemplate)
+        elif isinstance(data.get("ÜRÜN ADI"), list):
+            for i in range(len(data.get("ÜRÜN ADI"))):
+                updatedMalHizmetTableTemplate = malHizmetTableTemplate.copy()
+                updatedMalHizmetTableTemplate["malHizmet"] = data.get("ÜRÜN ADI")[i]
+                updatedMalHizmetTableTemplate["miktar"] = data.get("MİKTAR")[i]
+                updatedMalHizmetTableTemplate["birimFiyat"] = data.get("BİRİM FİYATI")[i]
+                updatedMalHizmetTableTemplate["iskontoOrani"] = data.get("İSKONTO ORANI")[i]
+                updatedMalHizmetTableTemplate["iskontoTutari"] = data.get("İSKONTO TUTARI")[i]
+                updatedMalHizmetTableTemplate["malHizmetTutari"] = data.get("SATIŞ TUTARI(KDV HARİÇ)")[i]
+                updatedMalHizmetTableTemplate["vergiOrani"] = data.get("KDV ORANI")[i]
+                updatedMalHizmetTableTemplate["kdvTutari"] = data.get("KDV TUTARI")[i]
+                updatedInvoice["malHizmetTable"].append(updatedMalHizmetTableTemplate)
 
         updatedInvoice["odenecekTutar"] = data.get("FATURALANACAK TUTAR")
-
+        
         response = self.sendInvoiceRequest(invoice_data=updatedInvoice, token=token)
+
         if response.status_code == 200:
             response_json = response.json()
             if 'data' in response_json:
@@ -158,4 +174,3 @@ class InvoiceSenderOperations:
                 return False
         else:
             return False
-

@@ -12,6 +12,7 @@ from models.InvoiceSenderOperations import InvoiceSenderOperations
 from models.LoginOperations import LoginOperations
 from PyQt6.QtWidgets import QMessageBox
 from models.CustomMessageBox import FailedMessageBox
+import numpy as np
 class Main(QMainWindow):
 
     def __init__(self):
@@ -60,18 +61,48 @@ class Main(QMainWindow):
                 self.loginValidation = False
         else:
             QMessageBox.information(None, "Logout Unsuccesful", f"Daha önceden giriş yapılmadı.", QMessageBox.StandardButton.Ok)
-        
+
+    def groupedInvoiceOperation(self, df):
+        def custom_agg(x):
+            if len(x) == 1:
+                result = x.iloc[0]
+            else:
+                result = x.tolist()
+            
+            if isinstance(result, np.integer):
+                return int(result)
+            
+            if isinstance(result, list):
+                return [int(item) if isinstance(item, np.integer) else item for item in result]
+
+            return result
+            
+        custom_agg_columns = ['ÜRÜN ADI', 'BİRİM', 'MİKTAR', 'BİRİM FİYATI', 'İSKONTO ORANI', 'İSKONTO TUTARI', 'SATIŞ TUTARI(KDV HARİÇ)', 'KDV ORANI', 'KDV TUTARI']
+        other_agg_columns = {"ALICI": "first", "ALICI SOYADI": "first", "ALICI ÜNVAN": "first", 
+                             "VERGİ DAİRESİ": "first", "FATURA ADRESİ": "first", "FATURALANACAK TUTAR": "sum"}
+        agg_dict = {col: custom_agg for col in custom_agg_columns}
+        agg_dict.update(other_agg_columns)
+
+        groupedDf = df.groupby('VKN/TCKN').agg(agg_dict).reset_index()
+
+        return groupedDf       
+
     def createInvoice(self):
-        print(self.token)
+        if self.invoiceTypeComboBox.currentText() == "Her Satır Ayrı Fatura":
+            invoiceData = self.data
+        else:
+            invoiceData = self.groupedInvoiceOperation(df=self.data)
+
         failedInvoices = []
-        if isinstance(self.data, pd.DataFrame) and self.loginValidation:
-            for index, row in self.data.iterrows():
+        if isinstance(invoiceData, pd.DataFrame) and self.loginValidation:
+            for index, row in invoiceData.iterrows():
                 response = self.InvoiceSenderOperations.createInvoice(data=row, token=self.token)
-                self.progressBar.setValue(int((index + 1) / len(self.data) * 100))
+                self.progressBar.setValue(int((index + 1) / len(invoiceData) * 100))
                 if response == True:
                     pass
                 else:
                     failedInvoices.append(index)
+
         else:
             QMessageBox.information(None, "Fatura Oluşturulamadı", "Veri Ekleyiniz Ve/Veya Giriş Yapınız.", QMessageBox.StandardButton.Ok)
         
@@ -79,7 +110,7 @@ class Main(QMainWindow):
             QMessageBox.information(None, "Fatura Oluşturuldu", "Fatura Oluşturma İşlemi Başarıyla Gerçekleşti.", QMessageBox.StandardButton.Ok)
             self.progressBar.setValue(0)
         else:
-            FailedMessageBox(failedInvoices=failedInvoices, data=self.data).exec()
+            FailedMessageBox(failedInvoices=failedInvoices, data=invoiceData).exec()
             self.progressBar.setValue(0)
 
     def openFileDialog(self):
@@ -90,7 +121,6 @@ class Main(QMainWindow):
                 QMessageBox.warning(self, "Dosya Formatı Hatası", "Excel Dosyası Seçin", QMessageBox.StandardButton.Ok)
             else:
                 validationFlag = DataValidator(pd.read_excel(filePath)).validate()
-                print(validationFlag)
                 if validationFlag:
                     self.filePath = filePath
                     self.filePathName.setText(self.filePath)            
@@ -99,7 +129,6 @@ class Main(QMainWindow):
         self.data = pd.read_excel(self.filePath)
         self.data = self.data.fillna("")
         self.rowCountText.setText(str(len(self.data))) 
-        print(self.data)
         dataShort = self.data[["ALICI", "ALICI SOYADI", "ALICI ÜNVAN", "VKN/TCKN", "ÜRÜN ADI", "SATIŞ TUTARI(KDV HARİÇ)"]]
         self.mainDataTable.setRowCount(len(dataShort))
         self.mainDataTable.setColumnCount(len(dataShort.columns))
