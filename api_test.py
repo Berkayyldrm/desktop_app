@@ -91,7 +91,7 @@ print(response)
 print(response.json())"""
 
 print("#############")
-"""url = 'https://earsivportaltest.efatura.gov.tr/earsiv-services/dispatch'
+url = 'https://earsivportaltest.efatura.gov.tr/earsiv-services/dispatch'
 headers = {
 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 }
@@ -167,18 +167,21 @@ data = {
             'token': token,
             'jp': json.dumps(invoice_template, indent=4)
         }
-
+print(data)
+import json
+with open('data200.json', 'w') as f:
+    json.dump(data, f, indent=4)
 #44b18e59-21ee-4475-aca8-b41af0056e0f
 
 response = requests.post(url, data=data, headers=headers)
 print(response)
 # Print the response from server
 print(response.text)
-"""
+
 
 print("################################")
 
-url = 'https://earsivportaltest.efatura.gov.tr/earsiv-services/dispatch'
+"""url = 'https://earsivportaltest.efatura.gov.tr/earsiv-services/dispatch'
 
 data_to_insert = {"baslangic":"01/06/2024","bitis":"09/06/2024","hangiTip":"5000/30000"}
 
@@ -200,4 +203,4 @@ response = requests.post(url, data=data, headers=headers)
 
 print(response)
 # Print the response from server
-print(response.text)
+print(response.text)"""

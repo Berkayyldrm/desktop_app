@@ -1,5 +1,4 @@
-from DesktopSelenium import DesktopSelenium
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTableWidgetItem, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTableWidgetItem, QMessageBox, QHeaderView
 from PyQt6.QtGui import QIcon
 from PyQt6.uic import loadUi
 import sys
@@ -9,7 +8,7 @@ from DisplayInvoices import DisplayInvoices
 ui_path = "./ui/"
 #logo_file = "path/to/your/logo.png"  # Logo dosyasının yolu
 from models.DataValidator import DataValidator
-from models.sendInvoiceOperations import sendInvoiceOperations
+from models.InvoiceSenderOperations import InvoiceSenderOperations
 from models.LoginOperations import LoginOperations
 from PyQt6.QtWidgets import QMessageBox
 
@@ -19,8 +18,8 @@ class Main(QMainWindow):
         super(Main, self).__init__()
         loadUi(f"{ui_path}main.ui", self)
         self.setupUI()
-        self.desktopSelenium = DesktopSelenium()
         self.loginOperations = LoginOperations()
+        self.InvoiceSenderOperations = InvoiceSenderOperations()
         self.data = None
         self.loginValidation = False
         self.userId = None
@@ -33,7 +32,7 @@ class Main(QMainWindow):
         self.openFileButton.clicked.connect(self.openFileDialog)
         self.loginButton.clicked.connect(self.loginFunction)
         self.logoutButton.clicked.connect(self.logoutFunction)
-        self.filePathBrowser.textChanged.connect(self.excelOperations)
+        self.filePathName.textChanged.connect(self.excelOperations)
         self.createInvoiceButton.clicked.connect(self.createInvoice)
         self.displayInvoicesButton.clicked.connect(self.displayInvoicesScreen)
     
@@ -62,10 +61,13 @@ class Main(QMainWindow):
             QMessageBox.information(None, "Logout Unsuccesful", f"Daha önceden giriş yapılmadı.", QMessageBox.StandardButton.Ok)
         
     def createInvoice(self):
+        print(self.token)
         if isinstance(self.data, pd.DataFrame) and self.loginValidation:
-            self.desktopSelenium.createInvoice()
+            for index, row in self.data.iterrows():
+                responseText = self.InvoiceSenderOperations.createInvoice(data=row, token=self.token)
+                print(responseText)
         else:
-            print("Veri Ekleyiniz Ve Giriş Yapınız")
+            QMessageBox.information(None, "Fatura Oluşturulamadı", "Veri Ekleyiniz Ve/Veya Giriş Yapınız.", QMessageBox.StandardButton.Ok)
 
     def openFileDialog(self):
         filePath, _ = QFileDialog.getOpenFileName(self, "Select File", "", 
@@ -78,19 +80,26 @@ class Main(QMainWindow):
                 print(validationFlag)
                 if validationFlag:
                     self.filePath = filePath
-                    self.filePathBrowser.setText(self.filePath)            
+                    self.filePathName.setText(self.filePath)            
 
     def excelOperations(self):
-        self.data = pd.read_excel(self.filePath) 
+        self.data = pd.read_excel(self.filePath)
+        self.data = self.data.fillna("")
+        self.rowCountText.setText(str(len(self.data))) 
         print(self.data)
-        #data_short = data[[""]]
-        self.mainDataTable.setRowCount(len(self.data))
-        self.mainDataTable.setColumnCount(len(self.data.columns))
-        self.mainDataTable.setHorizontalHeaderLabels(self.data.columns)
+        dataShort = self.data[["ALICI", "ALICI SOYADI", "ALICI ÜNVAN", "VKN/TCKN", "ÜRÜN ADI", "SATIŞ TUTARI(KDV HARİÇ)"]]
+        self.mainDataTable.setRowCount(len(dataShort))
+        self.mainDataTable.setColumnCount(len(dataShort.columns))
+        self.mainDataTable.setHorizontalHeaderLabels(dataShort.columns)
+        self.mainDataTable.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)  # Adjust specific column by index
 
-        for i in range(len(self.data)):
-            for j in range(len(self.data.columns)):
-                self.mainDataTable.setItem(i, j, QTableWidgetItem(str(self.data.iloc[i, j])))
+        for i in range(len(dataShort)):
+            for j in range(len(dataShort.columns)):
+                value = dataShort.iloc[i, j]
+                if pd.isna(value):
+                    self.mainDataTable.setItem(i, j, QTableWidgetItem(""))
+                else:
+                    self.mainDataTable.setItem(i, j, QTableWidgetItem(str(value)))
 
     def displayInvoicesScreen(self):
         self.second_window = DisplayInvoices()

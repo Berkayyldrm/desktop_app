@@ -12,14 +12,14 @@ class DataValidator:
             'ALICI SOYADI': lambda x: isinstance(x, str) or pd.isna(x),
             'ALICI ÜNVAN': lambda x: isinstance(x, str) or pd.isna(x),
             'VKN/TCKN': lambda x: isinstance(x, int) or isinstance(x, str),
-            'VERGİ DAİRESİ': lambda x: isinstance(x, str), #boş olabilir
+            'VERGİ DAİRESİ': lambda x: isinstance(x, str) or pd.isna(x), #boş olabilir
             'FATURA ADRESİ': lambda x: isinstance(x, str), # boş olamaz
             'ÜRÜN ADI': lambda x: isinstance(x, str), # boş olamaz
             'BİRİM': lambda x: pd.isna(x) or isinstance(x, str), # boş olamaz
             'MİKTAR': lambda x: isinstance(x, int) or isinstance(x, float), # boş olamaz
             'BİRİM FİYATI': lambda x: isinstance(x, int) or isinstance(x, float), # boş olamaz
-            'İSKONTO ORANI': lambda x: isinstance(x, int) or isinstance(x, float),# boş olabilir boş ise default 0
-            'İSKONTO TUTARI': lambda x: isinstance(x, int) or isinstance(x, float), # boş olabilir boş ise default 0
+            'İSKONTO ORANI': lambda x: isinstance(x, int) or isinstance(x, float) or pd.isna(x),# boş olabilir boş ise default 0
+            'İSKONTO TUTARI': lambda x: isinstance(x, int) or isinstance(x, float) or pd.isna(x), # boş olabilir boş ise default 0
             'SATIŞ TUTARI(KDV HARİÇ)': lambda x: isinstance(x, int) or isinstance(x, float), #boş olaamaz
             'KDV ORANI': lambda x: isinstance(x, int) or isinstance(x, float), #boş olaamaz 1 10 20
             'KDV TUTARI': lambda x: isinstance(x, int) or isinstance(x, float), # GEREK YOK
