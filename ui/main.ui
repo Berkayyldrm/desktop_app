@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>881</width>
-    <height>680</height>
+    <width>955</width>
+    <height>823</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -24,6 +30,30 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="usernameLineEdit">
+       <property name="text">
+        <string>33333303</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="passwordLineEdit"/>
+     </item>
+     <item row="4" column="1">
+      <widget class="QPushButton" name="logoutButton">
+       <property name="text">
+        <string>Güvenli Çıkış</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QPushButton" name="loginButton">
+       <property name="text">
+        <string>Giriş</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="usernameLabel">
        <property name="text">
@@ -37,30 +67,6 @@
         <string>Parola</string>
        </property>
       </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QPushButton" name="loginButton">
-       <property name="text">
-        <string>Giriş</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QPushButton" name="logoutButton">
-       <property name="text">
-        <string>Güvenli Çıkış</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="usernameLineEdit">
-       <property name="text">
-        <string>33333303</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="passwordLineEdit"/>
      </item>
     </layout>
    </widget>
@@ -77,37 +83,11 @@
      <string>GİB Kullanıcı İşlemleri</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>280</y>
-      <width>81</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Dosya Seç</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>360</y>
-      <width>131</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Toplam Satır Sayısı</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
       <x>530</x>
-      <y>370</y>
+      <y>450</y>
       <width>171</width>
       <height>20</height>
      </rect>
@@ -119,8 +99,8 @@
    <widget class="QPushButton" name="createInvoiceButton">
     <property name="geometry">
      <rect>
-      <x>730</x>
-      <y>380</y>
+      <x>750</x>
+      <y>450</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -132,49 +112,25 @@
    <widget class="QTableWidget" name="mainDataTable">
     <property name="geometry">
      <rect>
-      <x>25</x>
-      <y>440</y>
-      <width>831</width>
+      <x>40</x>
+      <y>520</y>
+      <width>791</width>
       <height>192</height>
      </rect>
     </property>
-    <column>
-     <property name="text">
-      <string>TCKN/VKN</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>İSİM</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>KDV %</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>KDV</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>KDV HARİÇ</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>TOPLAM</string>
-     </property>
-    </column>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
    </widget>
-   <widget class="QComboBox" name="comboBox">
+   <widget class="QComboBox" name="invoiceTypeComboBox">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>400</y>
-      <width>171</width>
+      <x>490</x>
+      <y>480</y>
+      <width>211</width>
       <height>25</height>
      </rect>
     </property>
@@ -185,15 +141,15 @@
     </item>
     <item>
      <property name="text">
-      <string>Bla Bla</string>
+      <string>Her TCKN/VKN Ayrı Fatura</string>
      </property>
     </item>
    </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>410</y>
+      <x>40</x>
+      <y>490</y>
       <width>151</width>
       <height>17</height>
      </rect>
@@ -218,46 +174,75 @@
    <widget class="QPushButton" name="filePathButton">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>280</y>
-      <width>89</width>
-      <height>25</height>
+      <x>420</x>
+      <y>300</y>
+      <width>141</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Dosya Bul</string>
-    </property>
-   </widget>
-   <widget class="QTextBrowser" name="filePathBrowser">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>280</y>
-      <width>501</width>
-      <height>31</height>
-     </rect>
+     <string>Dosya Seç</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>330</y>
+      <x>50</x>
+      <y>350</y>
       <width>101</width>
-      <height>17</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Seçilen Dosya</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="textBrowser_2">
+   <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>330</y>
-      <width>251</width>
+      <x>50</x>
+      <y>410</y>
+      <width>127</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Toplam Satır Sayısı</string>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="filePathName">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>360</y>
+      <width>621</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>490</y>
+      <width>111</width>
       <height>21</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="rowCountText">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>410</y>
+      <width>101</width>
+      <height>31</height>
      </rect>
     </property>
    </widget>
@@ -267,7 +252,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>881</width>
+     <width>955</width>
      <height>22</height>
     </rect>
    </property>
